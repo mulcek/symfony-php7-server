@@ -1,0 +1,22 @@
+FROM alpine:edge
+
+ENV WORKDIR=/srv/ssl USER=www-data UID=82
+
+RUN set -xe \
+    && apk add --no-cache --repository http://dl-3.alpinelinux.org/alpine/edge/testing/ --allow-untrusted --virtual .build-deps \
+        openssl \
+        expect \
+        su-exec
+
+COPY docker-copy/ssl/docker-entrypoint-*.sh /usr/local/bin/
+
+RUN set -xe pipefail \
+    && chmod a+x /usr/local/bin/docker-entrypoint-*.sh \
+    # ensure www-data user exists
+    # 82 is the standard uid/gid for "www-data" in Alpine
+    && addgroup -g ${UID} -S ${USER} \
+    && adduser -u ${UID} -D -S -G ${USER} ${USER}
+
+WORKDIR ${WORKDIR}
+
+CMD ["docker-entrypoint-ca.sh"]

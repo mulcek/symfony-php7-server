@@ -1,0 +1,119 @@
+version: '2'
+services:
+
+    db:
+        build:
+            context: .
+            dockerfile: ./DockerfileDB
+        environment:
+            MYSQL_ROOT_PASSWORD: ${MYSQL_ROOT_PASSWORD}
+            MYSQL_USER: ${MYSQL_USER}
+            MYSQL_PASSWORD: ${MYSQL_PASSWORD}
+            MYSQL_DATABASE: ${MYSQL_DATABASE}
+        ports:
+            - ${DB_HOST_PORT}:3306
+        volumes:
+            - db:/var/lib/mysql
+            - ${DB_CONFIGURATION_DIR}:/etc/mysql/conf.d
+        restart: unless-stopped
+
+
+    backend:
+        environment:
+            SYMFONY_ENV: ${SF_ENV}
+            SYMFONY_DEBUG: ${SF_DEBUG}
+            SF_APP_CONTAINER_DIR: ${SF_APP_CONTAINER_DIR}
+            HTTPDUSER: ${WEB_USERNAME}
+            NODE_ENV: ${NODE_ENV}
+            SYMFONY__DATABASE__HOST: todo_db_1
+            SYMFONY__DATABASE__PORT: 3306
+            SYMFONY__DATABASE__NAME: ${MYSQL_DATABASE}
+            SYMFONY__DATABASE__USER: ${MYSQL_USER}
+            SYMFONY__DATABASE__PASSWORD: ${MYSQL_PASSWORD}
+            SYMFONY__LOCALE: ${SF_LOCALE}
+            SYMFONY__SECRET: ${SF_SECRET}
+            SYMFONY__MAILER_TRANSPORT: ${SF_MAILER_TRANSPORT}
+            SYMFONY__MAILER_HOST: ${SF_MAILER_HOST}
+            SYMFONY__MAILER_PORT: ${SF_MAILER_PORT}
+            SYMFONY__MAILER_USER: ${SF_MAILER_USER}
+            SYMFONY__MAILER_PASSWORD: ${SF_MAILER_PASSWORD}
+            SYMFONY__DELIVERY_ADDRESS: ${SF_DELIVERY_ADDRESS}
+            SYMFONY__USER_COMPANY: ${SF_USER_COMPANY}
+            SYMFONY__REDIS__DEFAULT__DSN: 'redis://${REDIS_CLIENT_PASSWORD}@todo_redis_1'
+        build:
+            context: .
+            dockerfile: DockerfileBackend
+        # this can be defined only at child
+        #volumes_from:
+#            - php_fpm
+        volumes:
+            - symfony:${SF_APP_CONTAINER_DIR}
+            - symfony-cache:${SF_APP_CONTAINER_DIR}/var/cache
+            - symfony-logs:${SF_APP_CONTAINER_DIR}/var/logs
+            - symfony-sessions:${SF_APP_CONTAINER_DIR}/var/sessions
+            - symfony-uploads:${SF_APP_CONTAINER_DIR}/var/uploads
+            - ${PHP_CONFIGURATION_OVERRIDE}:/etc/php7/conf.d/50_php_override.ini:ro
+            - ${PHP_OPCACHE_CONFIGURATION_OVERRIDE}:/etc/php7/conf.d/50_opcache_override.ini:ro
+            - ${FREETDS_CONFIGURATION}:/etc/freetds.conf:ro
+            # add composer cache from host machine
+            - ${PHP_COMPOSER_CACHE_DIR}:/root/.composer
+        tmpfs:
+          - /run
+          - /tmp
+        restart: unless-stopped
+
+
+    php_fpm:
+        build:
+            context: .
+            dockerfile: ./DockerfilePHPFpm
+        environment:
+            OPCACHE_memory_consumption: ${OPCACHE_memory_consumption}
+            OPCACHE_validate_timestamps: ${OPCACHE_validate_timestamps}
+            OPCACHE_revalidate_freq: ${OPCACHE_revalidate_freq}
+            OPCACHE_enable_cli: ${OPCACHE_enable_cli}
+            OPCACHE_enable_file_override: ${OPCACHE_enable_file_override}
+#        ports:
+#            - ${PHP_FPM_TO_HOST_PORT}
+        # this can be defined only at child
+        #volumes_from:
+        #    - backend
+        volumes:
+            - ${PHP_FPM_BASE_CONFIGURATION}:/etc/php7/php-fpm.conf:ro
+            - ${PHP_FPM_CONFIGURATION_DIR}:/etc/php7/php-fpm.d:ro
+            - ${PHP_CONFIGURATION_OVERRIDE}:/etc/php7/conf.d/50_php_override.template:ro
+            - ${PHP_OPCACHE_CONFIGURATION_OVERRIDE}:/etc/php7/conf.d/50_opcache_override.template:ro
+            - ${FREETDS_CONFIGURATION}:/etc/freetds.conf:ro
+        tmpfs:
+          - /tmp
+        restart: unless-stopped
+
+
+    web:
+        build:
+            context: .
+            dockerfile: ./DockerfileWeb
+        environment:
+            SERVER_NAME: ${WEB_SERVER_NAME}
+            SERVER_ADMIN: ${WEB_SERVER_ADMIN}
+            APP_WEB_DIR: ${SF_APP_WEB_DIR}
+            PHP_FPM_URL: 'todo_php_fpm_1:9000'
+            HTTPDUSER: ${WEB_USERNAME}
+            SYMFONY_ENV: ${SF_ENV}
+            SF_APP_CONTAINER_DIR: ${SF_APP_CONTAINER_DIR}
+            SF_APP_ENV_INDEX: ${SF_APP_ENV_INDEX}
+        ports:
+            - ${WEB_TO_HOST_PORT}:443
+        restart: unless-stopped
+        volumes:
+            - ${WEB_CONFIGURATION_DIR}/httpd.template:/usr/local/apache2/conf/httpd.template:ro
+            - ${WEB_CONFIGURATION_DIR}/extra/httpd-ssl.template:/usr/local/apache2/conf/extra/httpd-ssl.template:ro
+            - ${WEB_CONFIGURATION_DIR}/ssl:/usr/local/apache2/conf/ssl:ro
+
+volumes:
+    db: {}
+    symfony: {}
+    symfony-cache: {}
+    symfony-logs: {}
+    symfony-sessions: {}
+    symfony-uploads: {}

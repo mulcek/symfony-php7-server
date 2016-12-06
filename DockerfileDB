@@ -1,0 +1,10 @@
+FROM mariadb:10.1
+
+COPY docker-copy/db/docker-entrypoint.sh /usr/local/bin/docker-entrypoint-override.sh
+
+RUN set -xe pipefail \
+    \
+    && chmod a+x /usr/local/bin/docker-entrypoint-override.sh
+
+ENTRYPOINT ["docker-entrypoint-override.sh"]
+CMD ["mysqld"]

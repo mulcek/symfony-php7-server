@@ -1,0 +1,73 @@
+FROM alpine:edge
+
+ENV WORKDIR=/srv/app USER=www-data UID=82 COMPOSER_ALLOW_SUPERUSER=1
+
+RUN set -xe \
+    # Bring in gettext so we can get `envsubst`
+	&& apk add --no-cache --repository http://dl-3.alpinelinux.org/alpine/edge/testing/ --allow-untrusted --virtual .build-deps \
+		$WKHTMLTO_DEPS \
+                gettext \
+                php7 \
+                php7-bcmath \
+                php7-ctype \
+                php7-curl \
+                php7-dom \
+                php7-gd \
+                php7-gettext \
+                php7-fpm \
+                php7-iconv \
+                php7-imap \
+                php7-intl \
+                php7-json \
+                php7-ldap \
+                php7-mbstring \
+                php7-mcrypt \
+                php7-mysqlnd \
+                php7-opcache \
+                php7-openssl \
+                php7-pcntl \
+                php7-pdo \
+                php7-pdo_dblib \
+                php7-pdo_mysql \
+                php7-phar \
+                php7-posix \
+                php7-redis \
+                php7-session \
+                php7-xml \
+                php7-zip \
+                php7-zlib \
+                su-exec \
+                zlib \
+        \
+        && ln -s /usr/bin/php7 /usr/bin/php \
+        # PHP Compose
+        && php -r "copy('https://getcomposer.org/installer', 'composer-setup.php');" \
+        && php composer-setup.php --install-dir=/usr/local/bin --filename=composer \
+        && php -r "unlink('composer-setup.php');" \
+        # ensure www-data user exists
+        # 82 is the standard uid/gid for "www-data" in Alpine
+        && addgroup -g ${UID} -S ${USER} \
+        && adduser -u ${UID} -D -S -G ${USER} ${USER}
+
+COPY docker-copy/backend/docker-entrypoint.sh /usr/local/bin/
+COPY docker-copy/backend/docker-entrypoint-worker.sh /usr/local/bin/
+
+RUN set -xe pipefail \
+	&& apk add --no-cache --virtual .build-deps curl git nodejs \
+    \
+    && wget https://npmjs.org/install.sh -O -| sh \
+    && npm install less uglifycss uglify-js -g \
+    && npm cache clean \
+    && apk del curl \
+    \
+    && chmod a+x /usr/local/bin/docker-entrypoint*.sh
+
+#USER ${USER}
+
+COPY app/ ${WORKDIR}
+
+WORKDIR ${WORKDIR}
+
+ENTRYPOINT ["docker-entrypoint.sh"]
+
+CMD ["/srv/app/bin/console", "cron:daemon", "--no-debug"]

@@ -1,0 +1,16 @@
+FROM httpd:2.4-alpine
+
+ENV WORKDIR=/srv/app USER=www-data UID=82
+
+COPY docker-copy/web/docker-entrypoint.sh /usr/local/bin/
+
+RUN set -xe pipefail \
+    && apk add --no-cache --virtual gettext su-exec \
+    \
+    && chmod a+x /usr/local/bin/docker-entrypoint.sh
+
+WORKDIR ${WORKDIR}
+
+ENTRYPOINT ["docker-entrypoint.sh"]
+
+CMD ["httpd-foreground"]
