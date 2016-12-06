@@ -1,6 +1,6 @@
 #!/bin/bash
 
-set -e
+[ "$SYMFONY_ENV" = "dev" ] && set -xe || set -e
 
 _datadir() {
     "$@" --verbose --help --log-bin-index="$(mktemp -u)" 2>/dev/null | awk '$1 == "datadir" { print $2; exit }'

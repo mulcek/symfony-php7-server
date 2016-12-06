@@ -1,6 +1,6 @@
 #!/bin/sh
 
-set -e
+[ "$SYMFONY_ENV" = "dev" ] && set -xe || set -e
 
 MAINTENANCE_ENABLED="$SF_APP_CONTAINER_DIR/web/.maintenance.enable"
 
