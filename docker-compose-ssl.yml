@@ -1,0 +1,43 @@
+version: '2'
+services:
+    ca:
+        build:
+            context: .
+            dockerfile: DockerfileSSL
+        environment:
+            SSL_BASE_DIR:                   ${SSL_BASE_DIR}
+            SSL_COUNTRY_CODE:               ${SSL_COUNTRY_CODE}
+            SSL_STATE_NAME:                 ${SSL_STATE_NAME}
+            SSL_LOCALITY_NAME:              ${SSL_LOCALITY_NAME}
+            SSL_ORGANIZATION_NAME:          ${SSL_ORGANIZATION_NAME}
+            SSL_ORGANIZATIONAL_UNIT_NAME:   ${SSL_ORGANIZATIONAL_UNIT_NAME}
+            SSL_SUBJECT_ALT_NAME:           ${SSL_SUBJECT_ALT_NAME}
+            SSL_EMAIL_ADDRESS:              ${SSL_EMAIL_ADDRESS}
+            SSL_CA_COMMON_NAME:             ${SSL_CA_COMMON_NAME}
+            SSL_CA_PASSWORD:                ${SSL_CA_PASSWORD}
+            SSL_CA_DAYS_VALID:              ${SSL_CA_DAYS_VALID}
+        volumes:
+            - ssl:/srv/ssl
+    admin_csr:
+        extends:
+            service: ca
+        command: docker-entrypoint-csr-admin.sh
+        environment:
+            SSL_BASE_DIR:                   ${SSL_BASE_DIR}
+            SSL_COUNTRY_CODE:               ${SSL_COUNTRY_CODE}
+            SSL_STATE_NAME:                 ${SSL_STATE_NAME}
+            SSL_LOCALITY_NAME:              ${SSL_LOCALITY_NAME}
+            SSL_ORGANIZATION_NAME:          ${SSL_ORGANIZATION_NAME}
+            SSL_ORGANIZATIONAL_UNIT_NAME:   ${SSL_ORGANIZATIONAL_UNIT_NAME}
+            SSL_SUBJECT_ALT_NAME:           ${SSL_SUBJECT_ALT_NAME}
+            SSL_EMAIL_ADDRESS:              ${SSL_EMAIL_ADDRESS}
+            SSL_CA_PASSWORD:                ${SSL_CA_PASSWORD}
+            SSL_CSR_COMMON_NAME:            ${SSL_CSR_COMMON_NAME}
+            SSL_CSR_PASSWORD:               ${SSL_CSR_PASSWORD}
+            SSL_CSR_DAYS_VALID:             ${SSL_CSR_DAYS_VALID}
+#            SSL_USER_DAYS_VALID:            ${SSL_USER_DAYS_VALID}
+        volumes:
+            - ssl:/srv/ssl
+
+volumes:
+    ssl: {}
