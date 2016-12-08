@@ -5,7 +5,6 @@ ENV WORKDIR=/srv/app USER=www-data UID=82 COMPOSER_ALLOW_SUPERUSER=1
 RUN set -xe \
     # Bring in gettext so we can get `envsubst`
 	&& apk add --no-cache --repository http://dl-3.alpinelinux.org/alpine/edge/testing/ --allow-untrusted --virtual .build-deps \
-		$WKHTMLTO_DEPS \
                 gettext \
                 php7 \
                 php7-bcmath \

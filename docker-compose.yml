@@ -43,9 +43,6 @@ services:
         build:
             context: .
             dockerfile: DockerfileBackend
-        # this can be defined only at child
-        #volumes_from:
-#            - php_fpm
         volumes:
             - symfony:${SF_APP_CONTAINER_DIR}
             - symfony-cache:${SF_APP_CONTAINER_DIR}/var/cache
@@ -75,10 +72,12 @@ services:
             OPCACHE_enable_file_override: ${OPCACHE_enable_file_override}
 #        ports:
 #            - ${PHP_FPM_TO_HOST_PORT}
-        # this can be defined only at child
-        #volumes_from:
-        #    - backend
         volumes:
+            - symfony:${SF_APP_CONTAINER_DIR}
+            - symfony-cache:${SF_APP_CONTAINER_DIR}/var/cache
+            - symfony-logs:${SF_APP_CONTAINER_DIR}/var/logs
+            - symfony-sessions:${SF_APP_CONTAINER_DIR}/var/sessions
+            - symfony-uploads:${SF_APP_CONTAINER_DIR}/var/uploads
             - ${PHP_FPM_BASE_CONFIGURATION}:/etc/php7/php-fpm.conf:ro
             - ${PHP_FPM_CONFIGURATION_DIR}:/etc/php7/php-fpm.d:ro
             - ${PHP_CONFIGURATION_OVERRIDE}:/etc/php7/conf.d/50_php_override.template:ro
@@ -106,11 +105,17 @@ services:
             - ${WEB_TO_HOST_PORT}:443
         restart: unless-stopped
         volumes:
+            - symfony:${SF_APP_CONTAINER_DIR}
+            - symfony-cache:${SF_APP_CONTAINER_DIR}/var/cache
+            - symfony-logs:${SF_APP_CONTAINER_DIR}/var/logs
+            - symfony-sessions:${SF_APP_CONTAINER_DIR}/var/sessions
+            - symfony-uploads:${SF_APP_CONTAINER_DIR}/var/uploads
             - ${WEB_CONFIGURATION_DIR}/httpd.template:/usr/local/apache2/conf/httpd.template:ro
             - ${WEB_CONFIGURATION_DIR}/extra/httpd-ssl.template:/usr/local/apache2/conf/extra/httpd-ssl.template:ro
-            - ${WEB_CONFIGURATION_DIR}/ssl:/usr/local/apache2/conf/ssl:ro
+            - ssl:/usr/local/apache2/conf/ssl:ro
 
 volumes:
+    ssl: {}
     db: {}
     symfony: {}
     symfony-cache: {}

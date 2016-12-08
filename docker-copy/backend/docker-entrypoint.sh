@@ -47,10 +47,10 @@ if [ "$WEBPREPARE" != "false" ] ; then
     find $SF_APP_CONTAINER_DIR/vendor/components/jqueryui/themes/cupertino/images -type f -exec basename "{}" \;| xargs -I{} ln -fs $SF_APP_CONTAINER_DIR/vendor/components/jqueryui/themes/cupertino/images/"{}" $SF_APP_CONTAINER_DIR/web/images/"{}"
 fi
 
-if [ "$DBMIGRATE" != "false" ] ; then
-    echo -e "\e[33mDatabase migration\e[0m"
-    php bin/console doctrine:migrations:migrate --no-interaction
-fi
+#if [ "$DBMIGRATE" != "false" ] ; then
+#    echo -e "\e[33mDatabase migration\e[0m"
+#    php bin/console doctrine:migrations:migrate --no-interaction
+#fi
 
 #disable maintenance mode
 rm -f "$MAINTENANCE_ENABLED"

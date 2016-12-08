@@ -111,16 +111,18 @@ send   "y\n"
 expect eof
 EOD
 
-ln -s $SSL_CA_DIR/cacert.pem $REQUESTS_FOLDER/cacert.pem
-
 chown www-data:www-data \
     $REQUESTS_FOLDER/cacert.pem \
     $REQUESTS_FOLDER/admin.server.csr.crt \
-    $REQUESTS_FOLDER/admin.server.csr.key
+    $REQUESTS_FOLDER/admin.server.csr.key \
+    $REQUESTS_FOLDER/cacert.pem
 
 chmod 400  \
     $REQUESTS_FOLDER/cacert.pem \
     $REQUESTS_FOLDER/admin.server.csr.crt \
-    $REQUESTS_FOLDER/admin.server.csr.key
+    $REQUESTS_FOLDER/admin.server.csr.key \
+    $REQUESTS_FOLDER/cacert.pem \
+    $REQUESTS_FOLDER/admin.server.csrkey.pem \
+    $REQUESTS_FOLDER/admin.server.csr.unsigned.crt
 
 echo -e "\e[00;32mOK!\e[00m"

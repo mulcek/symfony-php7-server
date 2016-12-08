@@ -86,8 +86,8 @@ EOD
 echo -e "\e[01;37mMaking sure that only root can access the CA folder and especially the private key.\e[00m"
 chmod -R 600 $SSL_CA_DIR
 
-#echo -e "\e[01;37mCopying authority ca-bundle.crt to downloadable folder\e[00m"
-#cp $SSL_CA_DIR/ca-bundle.crt $PFX_FOLDER/
+echo -e "\e[01;37mCopying authority ca-bundle.crt to webserver folder\e[00m"
+cp $SSL_CA_DIR/cacert.pem $SSL_CA_DIR/requests/
 
 rm -f "$SERVICE_CA_IN_PROGRESS"
 
