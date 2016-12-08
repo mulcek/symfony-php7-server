@@ -31,6 +31,9 @@ echo -e "\e[33mWarming cache\e[0m"
 php bin/console cache:warm
 
 if [ "$WEBPREPARE" != "false" ] ; then
+
+    echo -e "\e[01;37mMopa LESS symlink\e[0m"
+    php bin/console mopa:bootstrap:symlink:less
     
     echo -e "\e[33mDumping assets\e[0m"
     php bin/console assetic:dump
@@ -46,6 +49,8 @@ if [ "$WEBPREPARE" != "false" ] ; then
 
     find $SF_APP_CONTAINER_DIR/vendor/components/jqueryui/themes/cupertino/images -type f -exec basename "{}" \;| xargs -I{} ln -fs $SF_APP_CONTAINER_DIR/vendor/components/jqueryui/themes/cupertino/images/"{}" $SF_APP_CONTAINER_DIR/web/images/"{}"
 fi
+    echo -e "\e[33mForce create database schema\e[0m"
+    php bin/console doctrine:schema:update --force
 
 #if [ "$DBMIGRATE" != "false" ] ; then
 #    echo -e "\e[33mDatabase migration\e[0m"

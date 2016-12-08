@@ -61,7 +61,7 @@ RUN set -xe pipefail \
     \
     && chmod a+x /usr/local/bin/docker-entrypoint*.sh
 
-#USER ${USER}
+USER ${USER}
 
 COPY app/ ${WORKDIR}
 
