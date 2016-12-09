@@ -7,7 +7,7 @@ Prerequisites
 
 Install docker, python-pip and docker compose. For details take a look at vendors web site.
 
-* apt install docker
+* apt install docker python-pip
 * pip install docker-compose
 
 Host preparation
@@ -52,6 +52,13 @@ Make sure you give services a minute to start up. First time run needs a lot mor
 
     https://todo.docker/task/
 
+APP functional tests:
+------------
+First you have to enter backend services CLI, to be able to use Symfony console and run tests. There will be some deprecation warnings, but that is normal, since for demo we can't really fix vendor bundles.
+
+    cd ~/todo-app/
+    docker-compose -f app.yml exec backend sh
+    ./vendor/bin/phpunit
 
 Removing all:
 ------------
