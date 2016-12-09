@@ -28,6 +28,15 @@ Create user specific settings folder at path (use folder template from repositor
 
 Update config files, especialy .env at ~/todo-app/. You can leave it as is just to start demo. For certificate validation you should add 'todo.docker' to /etc/hosts at localhost ip.
 
+
+Build SSL certificates for HTTPS to work:
+------------
+
+    cd ~/todo-app/
+    docker-compose -f ssl.yml up --build ca
+    docker-compose -f ssl.yml up --build admin_csr
+
+
 Starting services:
 ------------
 
