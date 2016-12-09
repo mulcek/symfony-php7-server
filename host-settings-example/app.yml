@@ -1,0 +1,50 @@
+version: '2'
+services:
+
+    db:
+        extends:
+            file: ~/Development/todo-app/docker-compose.yml
+            service: db
+
+
+    backend:
+        extends:
+            file: ~/Development/todo-app/docker-compose.yml
+            service: backend
+        depends_on:
+            - web
+        volumes:
+            - ~/Development/todo-app/app:${SF_APP_CONTAINER_DIR}
+        # we will override daemon command with basic shell, since
+        # we will not include cron daemon, to keep app simple
+        #entrypoint: /bin/sh
+        command: /bin/sh
+        tty: true
+
+
+    php_fpm:
+        extends:
+            file: ~/Development/todo-app/docker-compose.yml
+            service: php_fpm
+        volumes:
+            - ~/Development/todo-app/app:${SF_APP_CONTAINER_DIR}
+        depends_on:
+            - web
+            - backend
+
+
+    web:
+        extends:
+            file: ~/Development/todo-app/docker-compose.yml
+            service: web
+        volumes:
+            - ~/Development/todo-app/app:${SF_APP_CONTAINER_DIR}
+
+volumes:
+    ssl: {}
+    db: {}
+    symfony: {}
+    symfony-cache: {}
+    symfony-logs: {}
+    symfony-sessions: {}
+    symfony-uploads: {}

@@ -1,0 +1,26 @@
+[PHP]
+
+;;;;;;;;;;;;;;;;;;;
+; About 50_opcache_override.ini   ;
+;;;;;;;;;;;;;;;;;;;
+; Project specific overrides
+; overriding many of the aspects of opcache behavior.
+opcache.memory_consumption = ${OPCACHE_memory_consumption}
+opcache.validate_timestamps = ${OPCACHE_validate_timestamps}
+opcache.revalidate_freq = ${OPCACHE_revalidate_freq}
+opcache.enable_cli = ${OPCACHE_enable_cli}
+opcache.enable_file_override = ${OPCACHE_enable_file_override}
+
+;DEV
+;opcache.memory_consumption = 64
+;opcache.validate_timestamps = 1
+;opcache.revalidate_freq = 0
+;opcache.enable_cli = 0
+;opcache.enable_file_override = 0
+
+;PROD
+;opcache.memory_consumption = 192
+;opcache.validate_timestamps = 0
+;opcache.revalidate_freq = 0
+;opcache.enable_cli = 1
+;opcache.enable_file_override = 1

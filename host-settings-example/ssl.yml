@@ -1,0 +1,13 @@
+version: '2'
+services:
+    ca:
+        extends:
+            file: ~/Development/todo-app/docker-compose-ssl.yml
+            service: ca
+    admin_csr:
+        extends:
+            file: ~/Development/todo-app/docker-compose-ssl.yml
+            service: admin_csr
+
+volumes:
+    ssl: {}

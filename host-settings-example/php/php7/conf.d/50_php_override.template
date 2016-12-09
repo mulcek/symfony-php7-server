@@ -1,0 +1,12 @@
+[PHP]
+
+;;;;;;;;;;;;;;;;;;;
+; About 50_php_override.ini   ;
+;
+; PHP-FPM sets parameters for web
+; Here are default parameters that holds for CLI
+;;;;;;;;;;;;;;;;;;;
+; Project specific overrides
+; overriding many of the aspects of PHP's behavior.
+memory_limit = 512M
+max_execution_time = 0
